@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Briefcase, LogOut, Loader2, Settings } from "lucide-react";
@@ -12,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 export function SiteHeader() {
-  const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
@@ -23,7 +21,7 @@ export function SiteHeader() {
     try {
       await logout();
       toast.success("Signed out");
-      router.refresh();
+      window.location.href = "/";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Logout failed");
     } finally {

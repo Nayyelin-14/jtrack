@@ -1,4 +1,4 @@
-import type { SSEEvent } from "@/lib/types";
+import type { SSEEvent, MyJobsResponse } from "@/lib/types";
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost/api";
 
@@ -26,6 +26,12 @@ export const jobApi = {
     return fetch(`${BASE}/jobs/active-jobs?${qs}`).then(handle);
   },
 
+  myJobs() {
+    return fetch(`${BASE}/jobs/my-jobs`, {
+      credentials: "include",
+    }).then(handle<MyJobsResponse>);
+  },
+
   jobDetail(jobId: number) {
     return fetch(`${BASE}/jobs/jobs/${jobId}`).then(handle);
   },
@@ -43,6 +49,32 @@ export const jobApi = {
     return fetch(`${BASE}/jobs/my-applications`, {
       method: "GET",
       credentials: "include",
+    }).then(handle);
+  },
+
+  applicationsByJob(jobId: number) {
+    return fetch(`${BASE}/jobs/applications-by-job/${jobId}`, {
+      credentials: "include",
+    }).then(handle);
+  },
+
+  create(payload: {
+    title: string;
+    description: string;
+    role: string;
+    location: string;
+    job_type: string;
+    work_location: string;
+    openings: number;
+    company_id: number;
+    salary?: number;
+    details?: Record<string, unknown>;
+  }) {
+    return fetch(`${BASE}/jobs/create-job`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     }).then(handle);
   },
 

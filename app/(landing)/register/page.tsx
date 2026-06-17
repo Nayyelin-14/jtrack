@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { authApi } from "@/lib/auth-api";
+import { GuestGuard } from "@/components/guest-guard";
 import { registerSchema, type RegisterInput } from "@/lib/validations";
 
 export default function RegisterPage() {
@@ -59,6 +60,7 @@ export default function RegisterPage() {
   }
 
   return (
+    <GuestGuard>
     <AuthShell
       title="Create your account"
       subtitle="Join J-Track and start organizing your hiring journey."
@@ -179,5 +181,6 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
     </AuthShell>
+    </GuestGuard>
   );
 }

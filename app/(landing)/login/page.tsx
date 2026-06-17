@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { authApi } from "@/lib/auth-api";
 import { useAuthStore } from "@/stores/auth-store";
 import { loginSchema, type LoginInput } from "@/lib/validations";
+import { GuestGuard } from "@/components/guest-guard";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function LoginPage() {
   }
 
   return (
+    <GuestGuard>
     <AuthShell
       title="Welcome back"
       subtitle="Sign in to continue tracking your applications."
@@ -106,5 +108,6 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </AuthShell>
+    </GuestGuard>
   );
 }
