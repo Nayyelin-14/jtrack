@@ -36,4 +36,7 @@ export const authApi = {
   },
   me() { return fetch(`${BASE}/auth/me`, { method: "GET", credentials: "include" }).then(handle); },
   logout() { return fetch(`${BASE}/auth/logout`, { method: "POST", credentials: "include" }).then(handle); },
+  changePassword(currentPassword: string, newPassword: string) {
+    return fetch(`${BASE}/auth/change-password`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ currentPassword, newPassword }) }).then(handle);
+  },
 };
