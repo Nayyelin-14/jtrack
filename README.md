@@ -1,241 +1,140 @@
 # J-Track
 
-A microservices-based job tracking platform with async event-driven email notifications powered by Apache Kafka.
+A frontend-only job tracking platform built with **Next.js 16** (App Router), **TypeScript**, and **Tailwind CSS v4**.
 
-## Architecture
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Styling | Tailwind CSS v4 with `tw-animate-css` |
+| UI Library | shadcn/ui (New York style) on Radix primitives |
+| State Management | Zustand v5 (auth store) |
+| Server State | TanStack React Query v5 |
+| Forms | react-hook-form + zod validation |
+| Auth | JWT via HTTP-only cookies (backend API) |
+| Animations | framer-motion |
+| Notifications | sonner (toasts) |
+| Icons | lucide-react |
+| Fonts | Inter (sans), Fraunces (serif headings) |
+
+## Routes
+
+| Route | Page | Auth |
+|-------|------|------|
+| `/` | Landing page (hero, features, CTA) | Public |
+| `/login` | Email/password login | Public |
+| `/register` | Registration (name, email, password, role, resume upload) | Public |
+| `/forgot-password` | Enter email to request reset | Public |
+| `/reset-password` | Redirects to `/reset-password/[token]` | Public |
+| `/reset-password/[token]` | Set new password | Public |
+| `/jobs` | Browse active jobs with search, filter, pagination | Public |
+| `/jobs/[jobId]` | Job detail, apply, AI match analysis | Public (apply/match require auth) |
+| `/dashboard` | User info cards, logout (wrapped in `AuthGuard`) | Protected |
+
+## Auth Flow
+
+1. **App mount** — `AuthInitializer` (inside `Providers`) calls `authApi.me()` to hydrate the Zustand store from the existing cookie session.
+2. **Login** — `login/page.tsx` validates with zod, calls `authApi.login()`, stores user in Zustand store via `setUser()`, redirects to `/jobs`.
+3. **Route protection** — The `(dashboard)` route group is wrapped in `AuthGuard`. If `!isLoading && !user`, it redirects to `/login`. Shows a spinner while loading.
+4. **Logout** — Calls `authApi.logout()`, clears the store, redirects to `/`.
+5. **Auth Shell** — `AuthShell` component wraps all auth pages with a consistent layout (logo, theme toggle, gradient background, animated entry).
+
+Auth is entirely **cookie-based** — all API requests use `credentials: "include"`. No token is stored or sent manually in headers.
+
+## Job Browsing & Applications
+
+### Browse Jobs (`/jobs`)
+- `BrowseJobs` (client) uses `useQuery` to fetch `jobApi.activeJobs()` with search `title`, `location` filter, and pagination.
+- Renders a 2-column grid of `JobCard` components (presentational, no `"use client"`).
+- States: loading spinner, error with retry, empty "No jobs found".
+
+### Job Detail (`/jobs/[jobId]`)
+- Fetches `jobApi.jobDetail(id)` and, if the user is a jobseeker, `jobApi.myApplications()` to check if already applied.
+- `JobDetail` renders: header (company logo, title, salary, badges), apply button, AI match button, quick info grid, description, tech stack, responsibilities/skills, preferred skills, certifications, benefits, work details, career growth, interview process.
+- **Apply**: `useMutation` calling `jobApi.apply(jobId)` — on success, toast + button shows "Applied ✓".
+
+### AI Match Analysis
+- `AnalyzeMatch` opens a dialog with the results of streaming SSE analysis.
+- `jobApi.analyzeMatch(jobId)` sends a POST and reads the response as an **SSE stream** via `ReadableStream.getReader()`, parsing `data: {...}` lines.
+- Stream events: `progress` (status text), `chunk` (ignored), `complete` (opens dialog with score, summary, recommendation, strengths, gaps), `error` (toast).
+
+### My Applications
+- `MyApplications` (client) fetches `jobApi.myApplications()` and renders a grid of `ApplicationCard` components with status badges (Submitted/amber, Rejected/red, Hired/green).
+
+## Data Flow
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                           Clients                                    │
-│                  (React Frontend :3000)                              │
-└──────────────────────────┬──────────────────────────────────────────┘
-                           │ HTTP
-                           ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                        API Gateway / Load Balancer                   │
-└─────┬──────────────────────┬──────────────────────┬──────────────────┘
-      │                      │                      │
-      ▼                      ▼                      ▼
-┌──────────┐         ┌────────────┐         ┌────────────┐
-│  Auth    │         │   Job      │         │   Utils    │
-│  Service │         │  Service   │         │  Service   │
-│  :6000   │         │  :7004     │         │  :6001     │
-└────┬─────┘         └─────┬──────┘         └─────┬──────┘
-     │                     │                      │
-     │   ┌──────────────────────────────────────┐ │
-     ├───┤            PostgreSQL                 ├─┘
-     │   │         (Neon / Serverless)           │
-     │   └──────────────────────────────────────┘ │
-     │                     │                      │
-     │   ┌──────────────────────────────────────┐ │
-     ├───┤            Redis                     ├─┘
-     │   │      (Upstash / Caching)             │
-     │   └──────────────────────────────────────┘ │
-     │                     │                      │
-     │   ┌──────────────────────────────────────┐ │
-     └───┤        Apache Kafka                  ├─┘
-         │     (Async Event Bus)                │
-         └──────────────────────────────────────┘
+User Action → Page/Component → react-hook-form / React Query → zod validation → authApi/jobApi (fetch with credentials: "include") → Zustand store / setState / toast → redirect or re-render
 ```
-
-## Event-Driven Email Flow
-
-```
-                        ┌──────────────┐
-  Forgot Password ──────►              │
-  (Auth Service)         │   KAFKA     │
-                         │             │
-  Application Status ───►│  send-mail  ├────► Utils Service ────► Nodemailer ────► Email
-  (Job Service)          │   topic     │      (Consumer)         (SMTP)
-                         │             │
-  Failed Messages ──────►│ send-mail-  │
-  (DLQ)                  │   dlq       │
-                        └──────────────┘
-```
-
-## Services
-
-| Service | Port | Role | Kafka Role |
-|---------|------|------|------------|
-| **auth** | 6000 | User auth, password reset | Producer (`send-mail`) |
-| **jobservice** | 7004 | Jobs, applications, companies | Producer (`send-mail`) |
-| **user** | 7001 | Profile management | None |
-| **utils** | 6001 | File upload, AI analysis, email dispatch | Consumer (`send-mail`) + DLQ producer |
-
-## Kafka Configuration
-
-All Kafka settings are environment-driven:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `KAFKA_BROKER` | `localhost:9092` | Comma-separated broker list |
-| `KAFKA_SSL` | `false` | Enable TLS |
-| `KAFKA_SASL_MECHANISM` | — | SASL mechanism (`plain`, `scram-sha-256`, `scram-sha-512`) |
-| `KAFKA_SASL_USERNAME` | — | SASL username |
-| `KAFKA_SASL_PASSWORD` | — | SASL password |
-| `KAFKA_CONNECTION_TIMEOUT` | `10000` | Connection timeout (ms) |
-| `KAFKA_AUTH_TIMEOUT` | `10000` | Auth timeout (ms) |
-| `KAFKA_RETRY_COUNT` | `10` | KafkaJS retry count |
-| `KAFKA_RETRY_INITIAL_TIME` | `300` | Retry backoff base (ms) |
-| `KAFKA_CONNECT_RETRIES` | `5` | Producer connection retries |
-| `KAFKA_TOPIC_PARTITIONS` | `3` | Partitions for auto-created topics |
-| `KAFKA_TOPIC_REPLICATION_FACTOR` | `1` | Replication factor |
-| `KAFKA_CONSUMER_GROUP` | `mail-service-group` | Consumer group ID |
-| `KAFKA_MAIL_TOPIC` | `send-mail` | Mail topic name |
-| `KAFKA_DLQ_TOPIC` | `send-mail-dlq` | Dead-letter queue topic |
-
-## Production Features
-
-### Kafka Producer (`packages/shared/src/kafka/producer.ts`)
-- **Singleton registry**: One producer instance per `clientId` across the process
-- **Exponential backoff**: Retries connection with `2^n` backoff (up to 15s)
-- **Deduplicated concurrent connects**: Multiple `connect()` calls share the same pending promise
-- **SASL/SSL**: Full support for authenticated, encrypted connections
-- **Health check**: `healthCheck()` returns broker metadata and connection status
-- **Graceful disconnect**: Clean shutdown via `disconnect()`
-
-### Kafka Consumer (`services/utils/src/consumer.ts`)
-- **Dead-letter queue**: Failed messages are published to `send-mail-dlq` with failure reason and timestamp
-- **Message validation**: Missing fields are caught and routed to DLQ
-- **Retry with backoff**: Email sending retries up to `MAIL_SEND_RETRIES` times with 1s × attempt delay
-- **Graceful shutdown**: `stop()` drains in-flight messages before disconnecting
-- **Configurable SMTP**: All mail transport settings are env-configurable
-
-### Topic Provisioning (`packages/shared/src/kafka/topic.ts`)
-Topics are explicitly provisioned at service startup (not auto-created on first produce):
-- `send-mail` — 3 partitions (configurable via `KAFKA_TOPIC_PARTITIONS`)
-- `send-mail-dlq` — Dead-letter queue for failed mail deliveries
-
-### Health Checks
-Each service exposes `GET /health` returning:
-```json
-{
-  "service": "auth-service",
-  "status": "healthy",
-  "kafka": {
-    "connected": true,
-    "clientId": "auth-service",
-    "metadata": { "brokers": 1, "topics": ["send-mail"] }
-  },
-  "database": "connected",
-  "redis": "connected"
-}
-```
-
-### Graceful Shutdown
-All services handle `SIGTERM`/`SIGINT`:
-1. Stop accepting new requests
-2. Disconnect Kafka producer/consumer
-3. Quit Redis connection
-4. Close database pool
-5. Exit
 
 ## Project Structure
 
 ```
-j-track/
-├── pnpm-workspace.yaml          # pnpm workspace definition
-├── package.json                  # Root scripts (build, dev, test)
-├── .npmrc                        # pnpm configuration
-├── packages/
-│   └── shared/                   # @jtrack/shared — shared library
-├── services/
-│   ├── auth/                     # Authentication service
-│   ├── jobservice/               # Job management service
-│   ├── user/                     # User profile service
-│   └── utils/                    # Utility service (AI, upload, email)
-└── frontend/                     # React SPA (separate)
+app/                                 # Next.js App Router
+├── (routes)/
+│   ├── (dashboard)/                 # AuthGuard-wrapped
+│   │   └── dashboard/page.tsx
+│   ├── (landing)/                   # Public pages
+│   │   ├── page.tsx                 # Landing
+│   │   ├── layout.tsx
+│   │   ├── login/page.tsx
+│   │   ├── register/page.tsx
+│   │   ├── forgot-password/page.tsx
+│   │   ├── reset-password/page.tsx
+│   │   └── reset-password/[token]/page.tsx
+│   └── jobs/
+│       ├── page.tsx                 # Browse jobs
+│       └── [jobId]/page.tsx         # Job detail
+├── layout.tsx                       # Root layout (fonts, Providers)
+├── loading.tsx                      # Global loading spinner
+├── error.tsx                        # Error boundary
+└── globals.css                      # Tailwind theme (light/dark)
+
+components/
+├── jobs/
+│   ├── analyze-match.tsx            # SSE streaming AI analysis dialog
+│   ├── application-card.tsx         # Application display card
+│   ├── browse-jobs.tsx              # Job search/filter/paginate
+│   ├── job-card.tsx                 # Job listing card
+│   ├── job-detail.tsx               # Full job detail view
+│   └── my-applications.tsx          # User's applications list
+├── providers/
+│   └── index.tsx                    # QueryClient + AuthInitializer + Toaster
+├── ui/                              # shadcn/ui primitives
+├── auth-guard.tsx                   # Route protection wrapper
+├── auth-initializer.tsx             # Hydrate auth from cookie on mount
+├── auth-shell.tsx                   # Auth page layout wrapper
+├── site-header.tsx                  # Global header (auth-aware)
+└── theme-toggle.tsx                 # Manual light/dark toggle
+
+lib/
+├── auth-api.ts                      # Auth API client (login, register, me, logout, etc.)
+├── job-api.ts                       # Job API client (activeJobs, detail, apply, analyzeMatch)
+├── types.ts                         # TypeScript interfaces
+├── utils.ts                         # Utility functions (cn)
+└── validations.ts                   # Zod schemas (login, register, forgot/reset password)
+
+stores/
+└── auth-store.ts                    # Zustand auth store (user, token, isLoading, initialize, logout)
+
+hooks/
+└── use-mobile.tsx                   # Responsive mobile check (768px breakpoint)
 ```
 
-## pnpm Workspace
+## Environment
 
-This monorepo uses [pnpm workspaces](https://pnpm.io/workspaces). The `@jtrack/shared` package is symlinked into each service via the `workspace:*` protocol — no more `file:../../` relative path hacks.
+Copy `.env.example` to `.env.local`:
 
-Key benefits:
-- **Single `pnpm install`** from root installs every service + shared package
-- **Shared dependency deduplication** — one copy of each package in pnpm's store
-- **Strict `node_modules`** — only declared dependencies are accessible
-- **Workspace protocol** — `"@jtrack/shared": "workspace:*"` links to local source
+```
+NEXT_PUBLIC_API_BASE=http://localhost/api
+```
 
 ## Getting Started
 
-### Prerequisites
-- **Node.js** 20+
-- **pnpm** 9+ (`npm install -g pnpm`)
-- **Apache Kafka** 3.x (e.g., `docker run -d -p 9092:9092 apache/kafka:latest`)
-- **PostgreSQL** 15+ (or [Neon](https://neon.tech))
-- **Redis** 7+ (or [Upstash](https://upstash.com))
-
-### Install
-
 ```bash
-# Install all dependencies (all services + shared package)
-pnpm install
-
-# Build the shared package first
-pnpm build:shared
+npm install
+npm run dev
 ```
 
-### Run (Development)
-
-Start each service in a separate terminal:
-
-```bash
-pnpm dev:auth       # Auth service → :6000
-pnpm dev:job        # Job service  → :7004
-pnpm dev:user       # User service → :7001
-pnpm dev:utils      # Utils service → :6001
-```
-
-Or run all services in parallel:
-
-```bash
-pnpm dev
-```
-
-### Run (Production)
-
-```bash
-# Build everything
-pnpm build
-
-# Start individual services
-pnpm --filter auth start
-pnpm --filter jobservice start
-pnpm --filter user start
-pnpm --filter utils start
-```
-
-### Type Checking
-
-```bash
-pnpm -r typecheck       # Check all services
-pnpm -r exec tsc --noEmit  # Alternative
-```
-
-### Testing
-
-```bash
-pnpm test               # Run all tests across workspace
-pnpm --filter utils test  # Test a specific service only
-```
-
-### Environment Variables
-
-Each service has a `.env` file. Key variables:
-
-```
-# Kafka (all services)
-KAFKA_BROKER=localhost:9092
-
-# Auth service
-JWT_ACCESS_SECRET=...
-JWT_REFRESH_SECRET=...
-JWT_RESET_SECRET=...
-
-# Utils service (email)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-MAIL_USER=your-email@gmail.com
-MAIL_PASS=your-app-password
-```
+Opens at [http://localhost:3000](http://localhost:3000). The app expects a backend API at `NEXT_PUBLIC_API_BASE`.
