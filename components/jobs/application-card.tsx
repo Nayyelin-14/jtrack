@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
-import type { Application } from "@/lib/types";
+import type { Application } from "@/types";
 import { Button } from "@/components/ui/button";
 
 const statusStyles: Record<string, string> = {
