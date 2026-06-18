@@ -3,8 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Search, Loader2, MapPin, RefreshCw, Briefcase } from "lucide-react";
-import { jobApi } from "@/lib/job-api";
-import type { ActiveJobsResponse, Job } from "@/lib/types";
+import { jobApi } from "@/lib/jobs";
+import type { ActiveJobsResponse, Job } from "@/types";
 import { JobCard } from "@/components/jobs/job-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

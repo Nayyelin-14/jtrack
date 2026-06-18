@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { MapPin, ExternalLink } from "lucide-react";
-import type { Job } from "@/lib/types";
+import type { Job } from "@/types";
 
 type Props = {
   job: Job;

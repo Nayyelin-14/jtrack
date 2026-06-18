@@ -2,8 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, RefreshCw } from "lucide-react";
-import { jobApi } from "@/lib/job-api";
-import type { ApplicationsResponse, Application } from "@/lib/types";
+import { jobApi } from "@/lib/jobs";
+import type { ApplicationsResponse, Application } from "@/types";
 import { ApplicationCard } from "@/components/jobs/application-card";
 import { Button } from "@/components/ui/button";
 

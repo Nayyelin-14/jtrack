@@ -3,12 +3,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Search, MapPin, Loader2, X, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
-import { jobApi } from "@/lib/job-api";
-import type { Job, ActiveJobsResponse, JobDetailResponse, ApplicationsResponse } from "@/lib/types";
+import { jobApi } from "@/lib/jobs";
+import type { Job, ActiveJobsResponse, JobDetailResponse, ApplicationsResponse } from "@/types";
 import { JobCard } from "@/components/jobs/job-card";
 import { JobDetail } from "@/components/jobs/job-detail";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useDebounce } from "@/hooks/use-debounce";
 import Link from "next/link";
 

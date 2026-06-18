@@ -10,18 +10,20 @@ import {
   UserRound,
   Settings,
 } from "lucide-react";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 const recruiterLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/companies", label: "Companies", icon: Building2 },
-  { href: "/manage/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/manage/jobs/create", label: "Post a Job", icon: FileText },
+  { href: "/dashboard/companies", label: "Companies", icon: Building2 },
+  { href: "/dashboard/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/dashboard/jobs/create", label: "Post a Job", icon: FileText },
 ];
 
 const seekerLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/applications", label: "Applications", icon: FileText },
+  { href: "/dashboard/skills", label: "Skills", icon: FileText },
+  { href: "/dashboard/resume", label: "Resume", icon: FileText },
 ];
 
 const commonLinks = [

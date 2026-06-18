@@ -3,7 +3,7 @@
 import { useCallback, useState, useRef } from "react";
 import { toast } from "sonner";
 import { Sparkles, Loader2, CheckCircle2, AlertCircle, X, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { jobApi } from "@/lib/job-api";
+import { jobApi } from "@/lib/jobs";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +12,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
-import type { AnalyzeMatchResult, SSEEvent } from "@/lib/types";
+import type { AnalyzeMatchResult, SSEEvent } from "@/types";
 
 export function AnalyzeMatch({ jobId }: { jobId: number }) {
   const [open, setOpen] = useState(false);

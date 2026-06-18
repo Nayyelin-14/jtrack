@@ -25,8 +25,8 @@ import {
   Star,
   TreePine,
 } from "lucide-react";
-import type { JobDetailResponse, JobDetails } from "@/lib/types";
-import { jobApi } from "@/lib/job-api";
+import type { JobDetailResponse, JobDetails } from "@/types";
+import { jobApi } from "@/lib/jobs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
