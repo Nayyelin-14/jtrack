@@ -2,10 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Plus, Building2, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { Plus, Building2, Loader2, MapPin } from "lucide-react";
 import { companyApi } from "@/lib/companies";
 import type { MyCompaniesResponse } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MyCompaniesPage() {
   const { data, isLoading, isError, error } = useQuery({
@@ -14,15 +17,20 @@ export default function MyCompaniesPage() {
   });
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 mb-1">My Companies</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Companies you manage.</p>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+            <Building2 className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">My Companies</h1>
+            <p className="text-xs text-muted-foreground">Companies you manage.</p>
+          </div>
         </div>
-        <Button asChild className="rounded-lg">
+        <Button asChild className="gap-2 shadow-md hover:shadow-elegant transition-all">
           <Link href="/dashboard/companies/new">
-            <Plus className="mr-1.5 h-4 w-4" /> New Company
+            <Plus className="h-4 w-4" /> New Company
           </Link>
         </Button>
       </div>
@@ -30,67 +38,80 @@ export default function MyCompaniesPage() {
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3">
-              <div className="h-4 w-32 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded" />
-              <div className="h-3 w-full bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded" />
-            </div>
+            <Card key={i}>
+              <CardContent className="p-5 space-y-3">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-full" />
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
 
       {isError && (
-        <div className="text-center py-16">
-          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Failed to load companies</p>
-          <p className="text-xs text-zinc-500 mt-1">{error instanceof Error ? error.message : "Something went wrong"}</p>
-        </div>
+        <Card className="border-destructive/30">
+          <CardContent className="grid place-items-center py-16 text-center">
+            <p className="text-sm font-medium text-foreground">Failed to load companies</p>
+            <p className="text-xs text-muted-foreground mt-1">{error instanceof Error ? error.message : "Something went wrong"}</p>
+          </CardContent>
+        </Card>
       )}
 
       {data && data.companies.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-3">
-            <Building2 className="h-6 w-6 text-zinc-400" />
-          </div>
-          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">No companies yet</p>
-          <p className="text-xs text-zinc-500 mt-1">Create your first company.</p>
-          <Button asChild className="mt-4 rounded-lg">
-            <Link href="/dashboard/companies/new">Create Company</Link>
-          </Button>
-        </div>
+        <Card className="border-dashed">
+          <CardContent className="grid place-items-center py-16 text-center">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 mb-4">
+              <Building2 className="h-7 w-7 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold">No companies yet</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Create your first company.</p>
+            <Button asChild className="mt-5 gap-2">
+              <Link href="/dashboard/companies/new"><Plus className="h-4 w-4" /> Create Company</Link>
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       {data && data.companies.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {data.companies.map((company) => (
-            <Link
+          {data.companies.map((company, i) => (
+            <motion.div
               key={company.company_id}
-              href={`/dashboard/companies/${company.company_id}`}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors group"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.04 }}
             >
-              <div className="flex items-center gap-3 mb-3">
-                {company.logo ? (
-                  <img src={company.logo} alt="" className="h-10 w-10 rounded-lg object-contain bg-white" />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10">
-                    <Building2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-sm text-zinc-800 dark:text-zinc-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                    {company.name}
-                  </h3>
-                  {company.industry && (
-                    <p className="text-xs text-zinc-500">{company.industry}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-zinc-400">
-                {company.location && <span>{company.location}</span>}
-                {company.size && <><span>·</span><span>{company.size}</span></>}
-              </div>
-            </Link>
+              <Link href={`/dashboard/companies/${company.company_id}`} className="block group">
+                <Card className="transition-all hover:shadow-elegant hover:-translate-y-0.5">
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      {company.logo ? (
+                        <img src={company.logo} alt="" className="h-10 w-10 rounded-lg object-contain bg-background" />
+                      ) : (
+                        <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10">
+                          <Building2 className="h-5 w-5 text-primary" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                          {company.name}
+                        </h3>
+                        {company.industry && (
+                          <p className="text-xs text-muted-foreground">{company.industry}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
+                      {company.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" />{company.location}</span>}
+                      {company.size && <><span>·</span><span>{company.size}</span></>}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
           ))}
         </div>
       )}
-    </>
+    </motion.div>
   );
 }

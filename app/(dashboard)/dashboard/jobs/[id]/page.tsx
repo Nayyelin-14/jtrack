@@ -2,10 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Loader2, ArrowLeft, Briefcase, MapPin, Clock, DollarSign, Eye, Users, Building2 } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import type { JobDetailResponse } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 
 export default function JobDetailPage() {
@@ -21,57 +24,57 @@ export default function JobDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+      <div className="grid h-64 place-items-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
 
   if (isError || !data?.job) {
     return (
-      <div className="text-center py-16">
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Job not found</p>
-        <p className="text-xs text-zinc-500 mt-1">{error instanceof Error ? error.message : "Could not load job"}</p>
-        <Button variant="outline" className="mt-4 rounded-lg" onClick={() => router.push("/dashboard/jobs")}>Back to Jobs</Button>
-      </div>
+      <Card className="border-destructive/30">
+        <CardContent className="grid place-items-center py-16 text-center">
+          <p className="text-sm font-medium text-foreground">Job not found</p>
+          <p className="text-xs text-muted-foreground mt-1">{error instanceof Error ? error.message : "Could not load job"}</p>
+          <Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard/jobs")}>Back to Jobs</Button>
+        </CardContent>
+      </Card>
     );
   }
 
   const job = data.job;
 
   return (
-    <>
-      <div className="flex items-center gap-2 mb-4">
-        <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+      <div className="flex items-center gap-2">
+        <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </button>
-        <span className="text-zinc-300 dark:text-zinc-600">|</span>
-        <Link href="/dashboard/jobs" className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+        <span className="text-border">|</span>
+        <Link href="/dashboard/jobs" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           All Jobs
         </Link>
       </div>
 
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              job.is_active ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-            }`}>
+            <Badge variant={job.is_active ? "default" : "secondary"}>
               {job.is_active ? "Active" : "Inactive"}
-            </span>
+            </Badge>
             {job.job_type && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-400">
-                <Clock className="h-3 w-3" />{job.job_type}
-              </span>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="h-3 w-3" />{job.job_type.replace(/_/g, " ")}
+              </Badge>
             )}
           </div>
-          <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100">{job.title}</h1>
-          <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1 flex-wrap">
+          <h1 className="text-2xl font-bold tracking-tight">{job.title}</h1>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
             {job.location && (
               <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{job.location}</span>
             )}
             {job.salary != null && (
-              <span className="inline-flex items-center gap-1 font-medium text-zinc-600 dark:text-zinc-400">
+              <span className="inline-flex items-center gap-1 font-medium text-foreground/70">
                 <DollarSign className="h-3.5 w-3.5" />
                 ${job.salary.toLocaleString()}
               </span>
@@ -82,38 +85,44 @@ export default function JobDetailPage() {
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
-          <Button variant="outline" size="sm" asChild className="rounded-lg text-xs">
+          <Button variant="outline" size="sm" asChild>
             <Link href={`/dashboard/jobs/${jobId}/applications`}>
-              <Users className="h-3.5 w-3.5" /> Applications
+              <Users className="mr-1.5 h-3.5 w-3.5" /> Applications
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild className="rounded-lg text-xs">
+          <Button variant="outline" size="sm" asChild>
             <Link href={`/dashboard/jobs/${jobId}/analytics`}>
-              <Eye className="h-3.5 w-3.5" /> Analytics
+              <Eye className="mr-1.5 h-3.5 w-3.5" /> Analytics
             </Link>
           </Button>
         </div>
       </div>
 
-      {job.description && (
-        <div className="mb-6 max-w-prose">
-          <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 mb-2">Description</h2>
-          <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap">{job.description}</p>
-        </div>
-      )}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {job.description && (
+          <Card>
+            <CardContent className="p-5">
+              <h2 className="text-sm font-semibold mb-2">Description</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">{job.description}</p>
+            </CardContent>
+          </Card>
+        )}
 
-      {job.role && (
-        <div className="mb-6 max-w-prose">
-          <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 mb-2">Role</h2>
-          <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">{job.role}</p>
-        </div>
-      )}
+        {job.role && (
+          <Card>
+            <CardContent className="p-5">
+              <h2 className="text-sm font-semibold mb-2">Role</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">{job.role}</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {job.work_location && (
-        <div className="text-xs text-zinc-500">
-          Work location: <span className="font-medium text-zinc-700 dark:text-zinc-300">{job.work_location}</span>
+        <div className="text-xs text-muted-foreground">
+          Work location: <span className="font-medium text-foreground">{job.work_location.replace(/_/g, " ")}</span>
         </div>
       )}
-    </>
+    </motion.div>
   );
 }

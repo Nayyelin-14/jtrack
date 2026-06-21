@@ -2,14 +2,17 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Plus, X, ArrowLeft } from "lucide-react";
+import { Loader2, Plus, X, ArrowLeft, Wrench } from "lucide-react";
 import Link from "next/link";
 import { userApi } from "@/lib/users";
 import type { SkillResponse } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SkillsPage() {
   const queryClient = useQueryClient();
@@ -43,48 +46,94 @@ export default function SkillsPage() {
   const skills = skillsData?.skills ?? [];
 
   return (
-    <>
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors mb-4">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
       </Link>
-      <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 mb-1">Skills</h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Manage the skills on your profile.</p>
+
+      <div className="flex items-center gap-2">
+        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+          <Wrench className="h-4 w-4 text-primary-foreground" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Skills</h1>
+          <p className="text-xs text-muted-foreground">Showcase what you do best.</p>
+        </div>
+      </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="h-5 w-5 animate-spin text-zinc-400" /></div>
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-24 rounded-full" />
+          ))}
+        </div>
       ) : (
-        <div className="max-w-xl space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {skills.map((s) => (
-              <span key={s.skill_id} className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                {s.name}
-                <button onClick={() => removeSkill.mutate(s.skill_id)} disabled={removeSkill.isPending} className="hover:text-red-500 transition-colors">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
-            {skills.length === 0 && <p className="text-sm text-zinc-500">No skills added yet.</p>}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              placeholder="Add a skill"
-              className="rounded-lg"
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newSkill.trim()) addSkill.mutate(newSkill.trim()); } }}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => { if (newSkill.trim()) addSkill.mutate(newSkill.trim()); }}
-              disabled={addSkill.isPending || !newSkill.trim()}
-              className="rounded-lg shrink-0"
-            >
-              {addSkill.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
-            </Button>
-          </div>
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Add a skill</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form
+                onSubmit={(e) => { e.preventDefault(); if (newSkill.trim()) addSkill.mutate(newSkill.trim()); }}
+                className="flex gap-2"
+              >
+                <Input
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  placeholder="e.g. TypeScript, GraphQL, Figma"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newSkill.trim()) addSkill.mutate(newSkill.trim()); } }}
+                />
+                <Button type="submit" disabled={addSkill.isPending || !newSkill.trim()} className="gap-1.5">
+                  {addSkill.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                  Add
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Your skills</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {skills.length === 0 ? (
+                <div className="grid place-items-center py-10 text-center">
+                  <Wrench className="mb-2 h-8 w-8 text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">No skills yet. Add your first above.</p>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  <AnimatePresence>
+                    {skills.map((s) => (
+                      <motion.div
+                        key={s.skill_id}
+                        layout
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Badge variant="secondary" className="gap-1.5 py-1.5 pl-3 pr-1.5 text-sm">
+                          {s.name}
+                          <button
+                            onClick={() => removeSkill.mutate(s.skill_id)}
+                            disabled={removeSkill.isPending}
+                            className="grid h-4 w-4 place-items-center rounded-full hover:bg-destructive/20 hover:text-destructive transition-colors"
+                            aria-label={`Remove ${s.name}`}
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
-    </>
+    </motion.div>
   );
 }
