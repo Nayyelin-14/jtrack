@@ -3,13 +3,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Briefcase } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import type { JobDetailResponse } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function EditJobPage() {
   const params = useParams();
@@ -34,24 +36,43 @@ export default function EditJobPage() {
   });
 
   return (
-    <>
-      <div className="flex items-center gap-2 mb-4">
-        <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back
-        </button>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+      <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+        <ArrowLeft className="h-3.5 w-3.5" /> Back
+      </button>
+
+      <div className="flex items-center gap-2">
+        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+          <Briefcase className="h-4 w-4 text-primary-foreground" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Edit Job</h1>
+          <p className="text-xs text-muted-foreground">Update this job listing.</p>
+        </div>
       </div>
-      <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 mb-1">Edit Job</h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Update this job listing.</p>
+
       {isLoading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="h-5 w-5 animate-spin text-zinc-400" /></div>
+        <div className="grid h-64 place-items-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       ) : (
-        <form onSubmit={(e) => { e.preventDefault(); toast.info("Job update API not yet implemented"); }} className="max-w-xl space-y-4">
-          <Button type="submit" disabled={submitting} className="rounded-lg">
-            {submitting && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
-            Save Changes
-          </Button>
-        </form>
+        <Card className="max-w-xl">
+          <CardContent className="p-6">
+            <form onSubmit={(e) => { e.preventDefault(); toast.info("Job update API not yet implemented"); }} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Job title</Label>
+                <Input id="title" value={data?.job?.title ?? ""} disabled />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" disabled={submitting}>
+                  {submitting && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       )}
-    </>
+    </motion.div>
   );
 }

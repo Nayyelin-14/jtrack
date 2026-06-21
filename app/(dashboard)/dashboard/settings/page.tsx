@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Lock, ArrowLeft, AlertTriangle } from "lucide-react";
+import { Loader2, Lock, ArrowLeft, AlertTriangle, Settings } from "lucide-react";
 import Link from "next/link";
 import { authApi } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -44,48 +46,58 @@ export default function SettingsPage() {
   }
 
   return (
-    <>
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors mb-4">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
       </Link>
-      <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 mb-1">Settings</h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Update your password and account preferences.</p>
 
-      <div className="max-w-md space-y-6">
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10">
-                <Lock className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Change Password</h2>
-                <p className="text-xs text-zinc-500">Use at least 6 characters</p>
-              </div>
+      <div className="flex items-center gap-2">
+        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+          <Settings className="h-4 w-4 text-primary-foreground" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-xs text-muted-foreground">Update your password and account preferences.</p>
+        </div>
+      </div>
+
+      <Card className="max-w-md">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10">
+              <Lock className="h-4 w-4 text-primary" />
             </div>
-            <div className="flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 p-3 mb-3">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <p className="text-xs text-amber-700 dark:text-amber-300">You will be logged out on all devices after changing your password.</p>
+            <div>
+              <CardTitle className="text-sm">Change Password</CardTitle>
+              <p className="text-xs text-muted-foreground">Use at least 6 characters</p>
             </div>
-            <form onSubmit={onSubmit} className="space-y-3">
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 p-3 mb-4">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-700 dark:text-amber-300">You will be logged out on all devices after changing your password.</p>
+          </div>
+          <form onSubmit={onSubmit} className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="current">Current password</Label>
-              <Input id="current" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="rounded-lg" />
+              <Input id="current" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="new">New password</Label>
-              <Input id="new" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="rounded-lg" />
+              <Input id="new" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="confirm">Confirm new password</Label>
-              <Input id="confirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="rounded-lg" />
+              <Input id="confirm" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             </div>
-            <Button type="submit" disabled={loading} className="rounded-lg w-full">
+            <Button type="submit" disabled={loading} className="w-full">
               {loading && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
               Change Password
             </Button>
           </form>
-        </div>
-      </div>
-    </>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

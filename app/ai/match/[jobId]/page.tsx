@@ -1,7 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { Target } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { AnalyzeMatch } from "@/components/jobs/analyze-match";
 
@@ -13,15 +14,17 @@ export default function MatchAnalysisPage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10">
-            <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+              <Target className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Match Analysis</h1>
+              <p className="text-xs text-muted-foreground">See how your profile aligns with this role.</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100">Match Analysis</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">See how your profile aligns with this role.</p>
-          </div>
-        </div>
+        </motion.div>
         <AnalyzeMatch jobId={numericJobId} />
       </main>
     </div>

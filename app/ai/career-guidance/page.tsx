@@ -1,68 +1,176 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Loader2, Send, StopCircle, User } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/store/auth-store";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+
+type Msg = { role: "user" | "assistant"; text: string };
 
 export default function CareerGuidancePage() {
-  const user = useAuthStore((s) => s.user);
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!query.trim()) return;
-    setLoading(true);
-    setResult(null);
-    // TODO: connect to SSE endpoint
-    setTimeout(() => {
-      setResult("Career guidance analysis will be available soon.");
-      setLoading(false);
-    }, 1000);
-  }
+  const send = async () => {
+    const q = input.trim();
+    if (!q || streaming) return;
+    setInput("");
+    setMessages((m) => [...m, { role: "user", text: q }, { role: "assistant", text: "" }]);
+    setStreaming(true);
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      const response = await fetch("/api/ai/career-guidance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: q,
+          context: messages.map((m) => `${m.role}: ${m.text}`).join("\n"),
+        }),
+        signal: ctrl.signal,
+      });
+      if (!response.ok) throw new Error("AI request failed");
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response stream");
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value, { stream: true });
+        setMessages((m) => {
+          const copy = [...m];
+          copy[copy.length - 1] = {
+            role: "assistant",
+            text: copy[copy.length - 1].text + text,
+          };
+          return copy;
+        });
+      }
+    } catch (e) {
+      if ((e as Error).name === "AbortError") return;
+      // Silent fail for now
+    } finally {
+      setStreaming(false);
+      abortRef.current = null;
+    }
+  };
+
+  const stop = () => {
+    abortRef.current?.abort();
+    setStreaming(false);
+  };
+
+  const suggestions = [
+    "How do I transition from frontend to full-stack?",
+    "What skills should I add to my resume for product roles?",
+    "How do I negotiate salary for a senior position?",
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10">
-            <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+              <Sparkles className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Career guidance</h1>
+              <p className="text-xs text-muted-foreground">Powered by AI · streams in real-time</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100">Career Guidance</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Get AI-powered career advice tailored to your profile.</p>
-          </div>
-        </div>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-          <div className="space-y-2">
-            <Label htmlFor="query">What would you like guidance on?</Label>
-            <textarea
-              id="query"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              rows={5}
-              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-400"
-              placeholder="Describe your career situation, goals, and what you need help with..."
-            />
-          </div>
-          <Button type="submit" disabled={loading || !query.trim()}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Get Guidance
-          </Button>
-        </form>
+        <Card className="flex flex-col overflow-hidden" style={{ minHeight: "calc(100vh - 18rem)" }}>
+          <CardContent className="flex-1 space-y-4 overflow-y-auto p-5">
+            {messages.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center text-center py-12">
+                <Sparkles className="mb-3 h-10 w-10 text-primary/40" />
+                <p className="text-sm text-muted-foreground">Ask anything about your career.</p>
+                <div className="mt-5 grid w-full max-w-md gap-2">
+                  {suggestions.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setInput(s)}
+                      className="rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-left text-sm transition hover:border-primary/50 hover:bg-primary/5"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <AnimatePresence initial={false}>
+                {messages.map((m, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""}`}
+                  >
+                    {m.role === "assistant" && (
+                      <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary/10">
+                        <Sparkles className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                    )}
+                    <div
+                      className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm ${
+                        m.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      }`}
+                    >
+                      {m.text || (streaming && i === messages.length - 1 ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : "")}
+                    </div>
+                    {m.role === "user" && (
+                      <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-muted">
+                        <User className="h-3.5 w-3.5" />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
+          </CardContent>
 
-        {result && (
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 p-6">
-            <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap">{result}</p>
+          <div className="border-t border-border/60 bg-background/80 p-3 backdrop-blur">
+            <form
+              onSubmit={(e) => { e.preventDefault(); send(); }}
+              className="flex items-end gap-2"
+            >
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about skills, roles, salary, interviews…"
+                rows={1}
+                className="min-h-10 resize-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    send();
+                  }
+                }}
+              />
+              {streaming ? (
+                <Button type="button" variant="destructive" onClick={stop} className="gap-1.5 shrink-0">
+                  <StopCircle className="h-4 w-4" /> Stop
+                </Button>
+              ) : (
+                <Button type="submit" disabled={!input.trim()} className="gap-1.5 shrink-0">
+                  <Send className="h-4 w-4" /> Send
+                </Button>
+              )}
+            </form>
           </div>
-        )}
+        </Card>
       </main>
     </div>
   );
