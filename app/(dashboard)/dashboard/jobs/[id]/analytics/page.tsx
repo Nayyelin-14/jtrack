@@ -2,8 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Loader2, ArrowLeft, Eye, Users, TrendingUp, BarChart3 } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, Users, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 import { analyticsApi } from "@/lib/analytics";
 import type { JobAnalyticsResponse } from "@/types";
@@ -23,7 +22,7 @@ export default function JobAnalyticsPage() {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-2">
         <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Job
@@ -34,14 +33,9 @@ export default function JobAnalyticsPage() {
         </Link>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <BarChart3 className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-xs text-muted-foreground">Performance metrics for this job listing.</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Analytics</h1>
+        <p className="text-xs text-muted-foreground">Performance metrics for this job listing.</p>
       </div>
 
       {isLoading && (
@@ -69,28 +63,28 @@ export default function JobAnalyticsPage() {
       {data && (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
-            <Card className="glass">
+            <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                   <Eye className="h-4 w-4 text-primary" /> Total Views
                 </div>
-                <p className="text-2xl font-bold text-foreground">{data.analytics.total_views ?? 0}</p>
+                <p className="font-display text-2xl font-bold text-foreground">{data.analytics.total_views ?? 0}</p>
               </CardContent>
             </Card>
-            <Card className="glass">
+            <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <Users className="h-4 w-4 text-emerald-500" /> Total Applications
+                  <Users className="h-4 w-4 text-success" /> Total Applications
                 </div>
-                <p className="text-2xl font-bold text-foreground">{data.analytics.total_applications ?? 0}</p>
+                <p className="font-display text-2xl font-bold text-foreground">{data.analytics.total_applications ?? 0}</p>
               </CardContent>
             </Card>
-            <Card className="glass">
+            <Card>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <TrendingUp className="h-4 w-4 text-amber-500" /> Conversion Rate
+                  <TrendingUp className="h-4 w-4 text-primary" /> Conversion Rate
                 </div>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="font-display text-2xl font-bold text-foreground">
                   {data.analytics.total_views && data.analytics.total_views > 0
                     ? `${((data.analytics.total_applications / data.analytics.total_views) * 100).toFixed(1)}%`
                     : "N/A"}
@@ -106,28 +100,28 @@ export default function JobAnalyticsPage() {
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data.analytics.daily} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.87 0 0 / 0.3)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                       <XAxis
                         dataKey="date"
-                        tick={{ fontSize: 12, fill: "oklch(0.64 0 0)" }}
+                        tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                         tickLine={false}
                         tickFormatter={(v: string) => {
                           const d = new Date(v);
                           return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
                         }}
                       />
-                      <YAxis tick={{ fontSize: 12, fill: "oklch(0.64 0 0)" }} tickLine={false} allowDecimals={false} />
+                      <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} tickLine={false} allowDecimals={false} />
                       <Tooltip
                         contentStyle={{
                           borderRadius: "8px",
-                          border: "1px solid oklch(0.87 0 0 / 0.3)",
+                          border: "1px solid var(--border)",
                           fontSize: "13px",
                         }}
                         labelFormatter={(v: string) => new Date(v).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
                       />
                       <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }} />
-                      <Bar dataKey="views" name="Views" fill="oklch(0.55 0.15 260)" radius={[4, 4, 0, 0]} maxBarSize={32} />
-                      <Bar dataKey="applications" name="Applications" fill="oklch(0.6 0.18 160)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+                      <Bar dataKey="views" name="Views" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+                      <Bar dataKey="applications" name="Applications" fill="var(--chart-2)" radius={[4, 4, 0, 0]} maxBarSize={32} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -136,6 +130,6 @@ export default function JobAnalyticsPage() {
           )}
         </>
       )}
-    </motion.div>
+    </div>
   );
 }

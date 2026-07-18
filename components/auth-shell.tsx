@@ -1,57 +1,90 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
-import { Briefcase } from "lucide-react";
+import { ArrowLeft, type LucideIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export function AuthShell({ title, subtitle, children, footer }: {
-  title: string; subtitle?: string; children: ReactNode; footer?: ReactNode;
+export function AuthShell({
+  title,
+  subtitle,
+  children,
+  footer,
+  icon: Icon,
+  tone = "primary",
+  backHref = "/",
+  backLabel = "Back home",
+  maxWidth = "max-w-md",
+  image,
+}: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  icon?: LucideIcon;
+  tone?: "primary" | "success";
+  backHref?: string;
+  backLabel?: string;
+  maxWidth?: string;
+  image?: { src: string; alt: string };
 }) {
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{ background: "var(--gradient-hero)" }}
-      />
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span
-            className="grid h-8 w-8 place-items-center rounded-lg shadow-elegant text-primary-foreground"
-            style={{ background: "var(--gradient-primary)" }}
-          >
-            <Briefcase className="h-4 w-4" />
-          </span>
-          <span className="text-lg font-bold">J-<span className="gradient-text">Track</span></span>
+  const form = (
+    <div className={`relative w-full ${maxWidth}`}>
+      {Icon ? (
+        tone === "success" ? (
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-md bg-success/15">
+            <Icon className="h-7 w-7 text-success" />
+          </div>
+        ) : (
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-md bg-primary text-primary-foreground">
+            <Icon className="h-7 w-7" />
+          </div>
+        )
+      ) : (
+        <Link href="/" className="mb-2 flex items-center justify-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-primary" />
+          <span className="font-display text-lg font-semibold">J-Track</span>
         </Link>
-        <ThemeToggle />
-      </header>
-      <motion.main
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mx-auto flex w-full max-w-md flex-col px-6 pb-16 pt-6"
-      >
-        <div className="glass mb-8 w-full rounded-3xl p-8 shadow-glow">
-          <Link href="/" className="mb-6 flex items-center justify-center gap-2">
-            <span
-              className="grid h-9 w-9 place-items-center rounded-xl shadow-elegant text-primary-foreground"
-              style={{ background: "var(--gradient-primary)" }}
-            >
-              <Briefcase className="h-4 w-4" />
-            </span>
-            <span className="text-lg font-bold">J-<span className="gradient-text">Track</span></span>
-          </Link>
-          <h1 className="text-center text-2xl font-bold tracking-tight">{title}</h1>
-          {subtitle && (
-            <p className="mt-1 text-center text-sm text-muted-foreground">{subtitle}</p>
-          )}
-          <div className="mt-6">{children}</div>
-          {footer && <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>}
+      )}
+      <h1 className="mt-5 text-center font-display text-2xl font-semibold tracking-tight">{title}</h1>
+      {subtitle && <p className="mt-2 text-center text-sm text-muted-foreground">{subtitle}</p>}
+      <div className="mt-6">{children}</div>
+      {footer && <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>}
+    </div>
+  );
+
+  if (image) {
+    return (
+      <div className="grid min-h-screen lg:grid-cols-2">
+        <div className="relative flex flex-col justify-between px-6 py-6 sm:px-10 sm:py-8">
+          <div className="flex items-center justify-between">
+            <Link href={backHref} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" /> {backLabel}
+            </Link>
+            <ThemeToggle />
+          </div>
+          <div className="grid flex-1 place-items-center py-8">{form}</div>
+          <div />
         </div>
-      </motion.main>
+        <div className="relative hidden lg:block">
+          <Image src={image.src} alt={image.alt} fill sizes="50vw" className="object-cover" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative grid min-h-screen place-items-center px-4 py-12">
+      <div className="absolute left-6 top-6 flex items-center gap-4">
+        <Link href={backHref} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> {backLabel}
+        </Link>
+      </div>
+      <div className="absolute right-6 top-6">
+        <ThemeToggle />
+      </div>
+      <div className="rounded-lg border border-border bg-card p-8">{form}</div>
     </div>
   );
 }

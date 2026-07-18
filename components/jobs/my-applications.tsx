@@ -23,7 +23,7 @@ export function MyApplications() {
 
   if (isError) {
     return (
-      <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-center">
+      <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-center">
         <p className="text-sm font-medium text-destructive">Failed to load applications</p>
         <p className="mt-1 text-xs text-muted-foreground">
           {error instanceof Error ? error.message : "Something went wrong"}
@@ -37,7 +37,7 @@ export function MyApplications() {
 
   if (!data || data.applications.length === 0) {
     return (
-      <div className="rounded-xl border border-border/60 bg-card/50 p-12 text-center">
+      <div className="rounded-lg border border-border bg-card p-12 text-center">
         <p className="text-sm text-muted-foreground">You haven&apos;t applied to any jobs yet.</p>
       </div>
     );

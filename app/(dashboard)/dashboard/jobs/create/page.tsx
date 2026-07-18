@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Briefcase, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import { companyApi } from "@/lib/companies";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +12,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function CreateJobPage() {
   const router = useRouter();
@@ -65,19 +72,14 @@ export default function CreateJobPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </button>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <Briefcase className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Post a Job</h1>
-          <p className="text-xs text-muted-foreground">Create a new job listing.</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Post a Job</h1>
+        <p className="text-xs text-muted-foreground">Create a new job listing.</p>
       </div>
 
       <Card className="max-w-xl">
@@ -85,17 +87,17 @@ export default function CreateJobPage() {
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="company">Company *</Label>
-              <select
-                id="company"
+              <Select
                 value={form.company_id}
-                onChange={(e) => setForm({ ...form, company_id: e.target.value })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
+                onValueChange={(v) => setForm({ ...form, company_id: v })}
               >
-                <option value="">Select a company</option>
-                {companiesData?.companies.map((c) => (
-                  <option key={c.company_id} value={c.company_id}>{c.name}</option>
-                ))}
-              </select>
+                <SelectTrigger id="company"><SelectValue placeholder="Select a company" /></SelectTrigger>
+                <SelectContent>
+                  {companiesData?.companies.map((c) => (
+                    <SelectItem key={c.company_id} value={String(c.company_id)}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="title">Job title *</Label>
@@ -107,12 +109,12 @@ export default function CreateJobPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="desc">Description *</Label>
-              <textarea
+              <Textarea
                 id="desc"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 rows={5}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring resize-none"
+                className="resize-none"
                 placeholder="Describe the role..."
               />
             </div>
@@ -129,25 +131,21 @@ export default function CreateJobPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="job_type">Job type</Label>
-                <select
-                  id="job_type"
-                  value={form.job_type}
-                  onChange={(e) => setForm({ ...form, job_type: e.target.value })}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
-                >
-                  {["Full-time", "Part-time", "Contract", "Internship"].map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
+                <Select value={form.job_type} onValueChange={(v) => setForm({ ...form, job_type: v })}>
+                  <SelectTrigger id="job_type"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Full-time", "Part-time", "Contract", "Internship"].map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="work_location">Work location</Label>
-                <select
-                  id="work_location"
-                  value={form.work_location}
-                  onChange={(e) => setForm({ ...form, work_location: e.target.value })}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
-                >
-                  {["Remote", "On-site", "Hybrid"].map((w) => <option key={w} value={w}>{w}</option>)}
-                </select>
+                <Select value={form.work_location} onValueChange={(v) => setForm({ ...form, work_location: v })}>
+                  <SelectTrigger id="work_location"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Remote", "On-site", "Hybrid"].map((w) => <SelectItem key={w} value={w}>{w}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="space-y-2">
@@ -164,6 +162,6 @@ export default function CreateJobPage() {
           </form>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

@@ -13,7 +13,7 @@ export function ApplicationCard({ application }: { application: Application }) {
   const statusClass = statusStyles[application.status] || "bg-muted text-muted-foreground";
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card/70 p-5 backdrop-blur transition-all duration-200 hover:shadow-md">
+    <div className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/20">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export function ApplicationCard({ application }: { application: Application }) {
           {application.status}
         </span>
       </div>
-      <div className="mt-4 flex items-center justify-end border-t border-border/40 pt-3">
+      <div className="mt-4 flex items-center justify-end border-t border-border pt-3">
         <Button asChild size="sm" variant="ghost" className="group/btn">
           <Link href={`/jobs/${application.job_id}`}>
             View job <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />

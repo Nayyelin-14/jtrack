@@ -68,7 +68,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <Card className="border-border/60 bg-card/70 backdrop-blur">
+      <Card className="border-border bg-card">
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
@@ -76,10 +76,10 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
                 <img
                   src={job.company_logo}
                   alt=""
-                  className="h-10 w-10 rounded-lg object-contain"
+                  className="h-10 w-10 rounded-xl object-contain"
                 />
               )}
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                 {job.title}
               </h1>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
                   </span>
                 )}
                 {job.salary != null && (
-                  <span className="flex items-center gap-1.5 font-semibold text-emerald-600">
+                  <span className="flex items-center gap-1.5 font-semibold text-success">
                     <DollarSign className="h-4 w-4" />
                     ${job.salary.toLocaleString()}
                   </span>
@@ -137,9 +137,9 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
       {/* Quick Info Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {field<number>(job, "experience_years") != null && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardContent className="flex items-center gap-3 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                 <Briefcase className="h-5 w-5 text-primary" />
               </div>
               <div>
@@ -152,9 +152,9 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
           </Card>
         )}
         {field<string>(job, "education") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardContent className="flex items-center gap-3 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                 <GraduationCap className="h-5 w-5 text-primary" />
               </div>
               <div>
@@ -165,9 +165,9 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
           </Card>
         )}
         {languages && languages.length > 0 && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardContent className="flex items-center gap-3 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                 <Globe className="h-5 w-5 text-primary" />
               </div>
               <div>
@@ -178,9 +178,9 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
           </Card>
         )}
         {field<boolean>(job, "visa_sponsorship") != null && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardContent className="flex items-center gap-3 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                 <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
               <div>
@@ -195,7 +195,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
       </div>
 
       {/* Description */}
-      <Card className="border-border/40">
+      <Card className="border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <FileText className="h-4 w-4 text-primary" /> Description
@@ -212,7 +212,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
 
       {/* Tech Stack */}
       {techStack && techStack.length > 0 && (
-        <Card className="border-border/40">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ListChecks className="h-4 w-4 text-primary" /> Tech Stack
@@ -231,7 +231,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
       {/* Responsibilities & Skills */}
       <div className="grid gap-6 md:grid-cols-2">
         {field<string>(job, "responsibilities") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Target className="h-4 w-4 text-primary" /> Responsibilities
@@ -245,7 +245,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
           </Card>
         )}
         {field<string>(job, "required_skills") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Star className="h-4 w-4 text-primary" /> Required Skills
@@ -262,7 +262,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
 
       {/* Preferred Skills */}
       {field<string>(job, "preferred_skills") && (
-        <Card className="border-border/40">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Lightbulb className="h-4 w-4 text-primary" /> Preferred Skills
@@ -278,7 +278,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
 
       {/* Certifications */}
       {certifications && certifications.length > 0 && (
-        <Card className="border-border/40">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldCheck className="h-4 w-4 text-primary" /> Certifications
@@ -298,7 +298,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
 
       {/* Benefits */}
       {field<string>(job, "benefits") && (
-        <Card className="border-border/40">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <TreePine className="h-4 w-4 text-primary" /> Benefits
@@ -319,7 +319,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
       {/* Work Details */}
       <div className="grid gap-6 md:grid-cols-2">
         {field<string>(job, "working_hours") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Clock className="h-4 w-4 text-primary" /> Working Hours
@@ -333,7 +333,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
           </Card>
         )}
         {field<string>(job, "team_structure") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Users className="h-4 w-4 text-primary" /> Team Structure
@@ -350,7 +350,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
 
       <div className="grid gap-6 md:grid-cols-2">
         {field<string>(job, "reporting_line") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <ChevronRight className="h-4 w-4 text-primary" /> Reports To
@@ -364,7 +364,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
           </Card>
         )}
         {field<string>(job, "career_growth") && (
-          <Card className="border-border/40">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <TreePine className="h-4 w-4 text-primary" /> Career Growth
@@ -381,7 +381,7 @@ export function JobDetail({ job, isSeeker, hasApplied = false }: Props) {
 
       {/* Interview Process */}
       {field<string>(job, "interview_process") && (
-        <Card className="border-border/40">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Calendar className="h-4 w-4 text-primary" /> Interview Process

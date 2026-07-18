@@ -2,8 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Loader2, ArrowLeft, Briefcase, MapPin, Clock, DollarSign, Eye, Users, Building2 } from "lucide-react";
+import { Loader2, ArrowLeft, MapPin, Clock, DollarSign, Eye, Users, Building2 } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import type { JobDetailResponse } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -45,7 +44,7 @@ export default function JobDetailPage() {
   const job = data.job;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-2">
         <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
@@ -123,6 +122,6 @@ export default function JobDetailPage() {
           Work location: <span className="font-medium text-foreground">{job.work_location.replace(/_/g, " ")}</span>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

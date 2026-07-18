@@ -3,9 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, Briefcase } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import type { JobDetailResponse } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -36,19 +35,14 @@ export default function EditJobPage() {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </button>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <Briefcase className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Edit Job</h1>
-          <p className="text-xs text-muted-foreground">Update this job listing.</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Edit Job</h1>
+        <p className="text-xs text-muted-foreground">Update this job listing.</p>
       </div>
 
       {isLoading ? (
@@ -73,6 +67,6 @@ export default function EditJobPage() {
           </CardContent>
         </Card>
       )}
-    </motion.div>
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
   Briefcase,
@@ -63,12 +62,7 @@ export function SiteHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const initial = user?.name?.[0]?.toUpperCase() ?? "U";
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="sticky top-0 z-40 w-full border-b border-border/60 bg-card/70 backdrop-blur-lg"
-    >
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-16">
         <div className="flex items-center gap-3">
           {onMenuClick && (
@@ -84,16 +78,11 @@ export function SiteHeader({ onMenuClick }: { onMenuClick?: () => void }) {
           )}
           <Link
             href="/"
-            className="group flex items-center gap-2 font-semibold tracking-tight"
+            className="group flex items-center gap-2 font-display font-semibold tracking-tight"
           >
-            <span
-              className="grid h-8 w-8 place-items-center rounded-lg shadow-elegant text-primary-foreground"
-              style={{ background: "var(--gradient-primary)" }}
-            >
-              <Briefcase className="h-4 w-4" />
-            </span>
-            <span className="text-lg font-bold tracking-tight">
-              J-<span className="gradient-text">Track</span>
+            <span className="h-2 w-2 rounded-full bg-primary transition-transform group-hover:scale-125" />
+            <span className="text-lg tracking-tight">
+              J-Track
             </span>
           </Link>
         </div>
@@ -133,7 +122,7 @@ export function SiteHeader({ onMenuClick }: { onMenuClick?: () => void }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="ml-1 rounded-full ring-offset-background transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                    <Avatar className="h-9 w-9 border border-border/60">
+                    <Avatar className="h-9 w-9 border border-border">
                       <AvatarImage
                         src={user.profile_pic ?? undefined}
                         alt={user.name}
@@ -196,18 +185,13 @@ export function SiteHeader({ onMenuClick }: { onMenuClick?: () => void }) {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Sign in</Link>
               </Button>
-              <Button
-                size="sm"
-                asChild
-                className="shadow-elegant text-primary-foreground"
-                style={{ background: "var(--gradient-primary)" }}
-              >
+              <Button size="sm" asChild className="px-5">
                 <Link href="/register">Get started</Link>
               </Button>
             </div>
           )}
         </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

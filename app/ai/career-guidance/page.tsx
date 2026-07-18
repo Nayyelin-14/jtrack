@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Sparkles, Loader2, Send, StopCircle, User } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
@@ -75,17 +75,10 @@ export default function CareerGuidancePage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-2 mb-6">
-            <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Career guidance</h1>
-              <p className="text-xs text-muted-foreground">Powered by AI · streams in real-time</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-bold tracking-tight">Career guidance</h1>
+          <p className="text-xs text-muted-foreground">Powered by AI · streams in real-time</p>
+        </div>
 
         <Card className="flex flex-col overflow-hidden" style={{ minHeight: "calc(100vh - 18rem)" }}>
           <CardContent className="flex-1 space-y-4 overflow-y-auto p-5">
@@ -98,7 +91,7 @@ export default function CareerGuidancePage() {
                     <button
                       key={s}
                       onClick={() => setInput(s)}
-                      className="rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-left text-sm transition hover:border-primary/50 hover:bg-primary/5"
+                      className="rounded-xl border border-border bg-card px-3 py-2 text-left text-sm transition hover:border-primary/50 hover:bg-primary/5"
                     >
                       {s}
                     </button>
@@ -115,15 +108,15 @@ export default function CareerGuidancePage() {
                     className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""}`}
                   >
                     {m.role === "assistant" && (
-                      <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary/10">
+                      <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/10">
                         <Sparkles className="h-3.5 w-3.5 text-primary" />
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm ${
+                      className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-4 py-2.5 text-sm ${
                         m.role === "user"
                           ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
+                          : "border border-border bg-muted"
                       }`}
                     >
                       {m.text || (streaming && i === messages.length - 1 ? (
@@ -131,7 +124,7 @@ export default function CareerGuidancePage() {
                       ) : "")}
                     </div>
                     {m.role === "user" && (
-                      <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-muted">
+                      <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-muted">
                         <User className="h-3.5 w-3.5" />
                       </div>
                     )}
@@ -141,7 +134,7 @@ export default function CareerGuidancePage() {
             )}
           </CardContent>
 
-          <div className="border-t border-border/60 bg-background/80 p-3 backdrop-blur">
+          <div className="border-t border-border bg-background p-3">
             <form
               onSubmit={(e) => { e.preventDefault(); send(); }}
               className="flex items-end gap-2"

@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Plus, Building2, Loader2, MapPin } from "lucide-react";
 import { companyApi } from "@/lib/companies";
 import type { MyCompaniesResponse } from "@/types";
@@ -17,18 +16,13 @@ export default function MyCompaniesPage() {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-            <Building2 className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">My Companies</h1>
-            <p className="text-xs text-muted-foreground">Companies you manage.</p>
-          </div>
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight">My Companies</h1>
+          <p className="text-xs text-muted-foreground">Companies you manage.</p>
         </div>
-        <Button asChild className="gap-2 shadow-md hover:shadow-elegant transition-all">
+        <Button asChild className="gap-2">
           <Link href="/dashboard/companies/new">
             <Plus className="h-4 w-4" /> New Company
           </Link>
@@ -60,7 +54,7 @@ export default function MyCompaniesPage() {
       {data && data.companies.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="grid place-items-center py-16 text-center">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 mb-4">
+            <div className="grid h-14 w-14 place-items-center rounded-lg bg-primary/10 mb-4">
               <Building2 className="h-7 w-7 text-primary" />
             </div>
             <h2 className="text-xl font-semibold">No companies yet</h2>
@@ -74,21 +68,16 @@ export default function MyCompaniesPage() {
 
       {data && data.companies.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {data.companies.map((company, i) => (
-            <motion.div
-              key={company.company_id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.04 }}
-            >
+          {data.companies.map((company) => (
+            <div key={company.company_id}>
               <Link href={`/dashboard/companies/${company.company_id}`} className="block group">
-                <Card className="transition-all hover:shadow-elegant hover:-translate-y-0.5">
+                <Card className="transition-all hover:shadow-sm hover:-translate-y-0.5">
                   <CardContent className="p-5">
                     <div className="flex items-center gap-3 mb-3">
                       {company.logo ? (
-                        <img src={company.logo} alt="" className="h-10 w-10 rounded-lg object-contain bg-background" />
+                        <img src={company.logo} alt="" className="h-10 w-10 rounded-xl object-contain bg-background" />
                       ) : (
-                        <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10">
+                        <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10">
                           <Building2 className="h-5 w-5 text-primary" />
                         </div>
                       )}
@@ -108,10 +97,10 @@ export default function MyCompaniesPage() {
                   </CardContent>
                 </Card>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

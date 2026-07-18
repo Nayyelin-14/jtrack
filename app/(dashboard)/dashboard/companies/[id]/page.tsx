@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Loader2, Building2, Globe, MapPin, ArrowLeft, Briefcase, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { companyApi } from "@/lib/companies";
@@ -11,6 +10,17 @@ import type { CompanyDetailResponse } from "@/types";
 import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function CompanyDetailPage() {
   const params = useParams();
@@ -26,7 +36,6 @@ export default function CompanyDetailPage() {
   });
 
   async function handleDelete() {
-    if (!confirm("Delete this company and all associated jobs? This cannot be undone.")) return;
     try {
       const res = await companyApi.remove(companyId) as { success: boolean; message: string };
       toast.success(res.message || "Company deleted");
@@ -59,7 +68,7 @@ export default function CompanyDetailPage() {
   const company = data.company;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-2">
         <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
@@ -80,7 +89,7 @@ export default function CompanyDetailPage() {
             </div>
           )}
           <div>
-            <h1 className="text-xl font-bold tracking-tight">{company.name}</h1>
+            <h1 className="font-display text-xl font-bold tracking-tight">{company.name}</h1>
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 flex-wrap">
               {company.industry && <span>{company.industry}</span>}
               {company.size && <><span>·</span><span>{company.size}</span></>}
@@ -90,9 +99,25 @@ export default function CompanyDetailPage() {
           </div>
         </div>
         {isRecruiter && (
-          <Button variant="destructive" size="sm" onClick={handleDelete} className="gap-1.5">
-            <Trash2 className="h-3.5 w-3.5" /> Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" className="gap-1.5">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete this company?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete the company and all associated jobs. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
 
@@ -108,7 +133,7 @@ export default function CompanyDetailPage() {
               <Link
                 key={job.job_id}
                 href={`/dashboard/jobs/${job.job_id}`}
-                className="flex items-center justify-between rounded-xl border border-border/60 p-4 hover:border-primary/40 hover:shadow-elegant transition-all group"
+                className="flex items-center justify-between rounded-xl border border-border p-4 hover:border-primary/40 hover:shadow-sm transition-all group"
               >
                 <div>
                   <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{job.title}</p>
@@ -120,6 +145,6 @@ export default function CompanyDetailPage() {
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

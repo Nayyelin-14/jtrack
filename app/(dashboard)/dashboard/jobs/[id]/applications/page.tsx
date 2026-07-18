@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, User, CheckCircle, XCircle, Clock, FileText, Crown, AlertTriangle } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
@@ -60,25 +59,20 @@ export default function JobApplicationsPage() {
     : [];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Job
       </button>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <User className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
-          <p className="text-xs text-muted-foreground">{data?.count ?? 0} total applications</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Applications</h1>
+        <p className="text-xs text-muted-foreground">{data?.count ?? 0} total applications</p>
       </div>
 
       {isLoading && (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/60 p-4 space-y-2 animate-pulse">
+            <div key={i} className="rounded-lg border border-border p-4 space-y-2 animate-pulse">
               <div className="h-4 w-36 bg-muted rounded" />
               <div className="h-3 w-full bg-muted rounded" />
             </div>
@@ -108,17 +102,12 @@ export default function JobApplicationsPage() {
       {data && data.applications.length > 0 && (
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground">Subscribed applicants shown first</p>
-          {sortedApps.map((app, i) => {
+          {sortedApps.map((app) => {
             const cfg = statusConfig[app.status] || statusConfig.Submitted;
             const isTerminal = terminalStatuses.includes(app.status);
             return (
-              <motion.div
-                key={app.application_id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i, 10) * 0.03 }}
-              >
-                <Card className="transition-all hover:shadow-elegant">
+              <div key={app.application_id}>
+                <Card className="transition-colors hover:border-foreground/20">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -187,7 +176,7 @@ export default function JobApplicationsPage() {
                           </div>
                         )}
                         {!isTerminal && app.status !== "Submitted" && app.status !== "Applied" && (
-                          <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400">
+                          <div className="flex items-center gap-1 text-[10px] text-success">
                             <AlertTriangle className="h-2.5 w-2.5" /> Email notification will be sent
                           </div>
                         )}
@@ -195,11 +184,11 @@ export default function JobApplicationsPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             );
           })}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

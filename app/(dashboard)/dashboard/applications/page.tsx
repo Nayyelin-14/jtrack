@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Loader2, Briefcase, Clock, CheckCircle, XCircle, FileText, ArrowLeft, ListChecks } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import type { ApplicationsResponse } from "@/types";
@@ -26,25 +25,20 @@ export default function ApplicationsPage() {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
       </Link>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <ListChecks className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
-          <p className="text-xs text-muted-foreground">{data?.count ?? 0} total applications</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Applications</h1>
+        <p className="text-xs text-muted-foreground">{data?.count ?? 0} total applications</p>
       </div>
 
       {isLoading && (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/60 p-4 space-y-2">
+            <div key={i} className="rounded-lg border border-border p-4 space-y-2">
               <Skeleton className="h-4 w-36" />
               <Skeleton className="h-3 w-full" />
             </div>
@@ -81,13 +75,8 @@ export default function ApplicationsPage() {
           {data.applications.map((app, i) => {
             const cfg = statusConfig[app.status] || statusConfig.Submitted;
             return (
-              <motion.div
-                key={app.application_id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.04 }}
-              >
-                <Card className="transition-all hover:shadow-elegant hover:-translate-y-0.5">
+              <div key={app.application_id}>
+                <Card className="transition-colors hover:border-foreground/20">
                   <CardContent className="flex items-start justify-between gap-4 p-5">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-foreground truncate">
@@ -106,11 +95,11 @@ export default function ApplicationsPage() {
                     </Badge>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             );
           })}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

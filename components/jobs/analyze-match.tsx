@@ -115,24 +115,24 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="w-full sm:max-w-[70%] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl border-zinc-200 dark:border-zinc-800 shadow-2xl [&>button.absolute]:hidden"
+          className="w-full sm:max-w-[70%] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden rounded-lg border-border [&>button.absolute]:hidden"
         >
           {/* Header */}
-          <div className="shrink-0 flex items-center justify-between px-6 py-4 bg-gradient-to-r from-indigo-500/[0.07] to-transparent border-b border-zinc-200 dark:border-zinc-800">
+          <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 ring-1 ring-indigo-500/20">
-                <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                <Sparkles className="h-4 w-4" />
               </div>
               <div>
-                <DialogTitle className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <DialogTitle className="text-sm font-semibold">
                   AI Match Analysis
                 </DialogTitle>
-                <DialogDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+                <DialogDescription className="text-xs text-muted-foreground">
                   How your profile aligns with this role
                 </DialogDescription>
               </div>
             </div>
-            <DialogClose className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+            <DialogClose className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
               <X className="h-4 w-4" />
             </DialogClose>
           </div>
@@ -143,10 +143,10 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
               <div className="max-w-3xl mx-auto space-y-6">
 
                 {/* Score hero */}
-                <div className="flex items-center gap-5 p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+                <div className="flex items-center gap-5 p-5 rounded-lg bg-muted/40 border border-border">
                   <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
                     <svg className="h-20 w-20 -rotate-90 absolute" viewBox="0 0 80 80">
-                      <circle cx="40" cy="40" r="34" fill="none" stroke="currentColor" strokeWidth="5" className="text-zinc-200 dark:text-zinc-700" />
+                      <circle cx="40" cy="40" r="34" fill="none" stroke="currentColor" strokeWidth="5" className="text-muted" />
                       <circle
                         cx="40" cy="40" r="34"
                         fill="none"
@@ -154,19 +154,19 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
                         strokeLinecap="round"
                         strokeDasharray={`${2 * Math.PI * 34}`}
                         strokeDashoffset={`${2 * Math.PI * 34 * (1 - score / 100)}`}
-                        className={`transition-all duration-1000 ease-out drop-shadow-sm ${score >= 80 ? "stroke-emerald-500" : score >= 60 ? "stroke-amber-500" : score >= 40 ? "stroke-orange-500" : "stroke-red-500"}`}
+                        className={`transition-all duration-1000 ease-out ${score >= 80 ? "stroke-emerald-500" : score >= 60 ? "stroke-amber-500" : score >= 40 ? "stroke-orange-500" : "stroke-red-500"}`}
                       />
                     </svg>
-                    <span className={`relative text-sm font-bold ${scoreText}`}>{score}%</span>
+                    <span className={`font-display relative text-sm font-bold ${scoreText}`}>{score}%</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <div className={`h-2 w-2 rounded-full ${scoreColor}`} />
-                      <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                      <span className="text-sm font-semibold">
                         {scoreLabel} match
                       </span>
                     </div>
-                    <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       {result.summary}
                     </p>
                   </div>
@@ -174,16 +174,16 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
 
                 {/* Summary + Recommendation */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
-                    <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2">
+                  <div className="p-4 rounded-lg bg-muted/40 border border-border">
+                    <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-2">
                       Summary
                     </p>
-                    <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       {result.summary}
                     </p>
                   </div>
-                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
-                    <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2">
+                  <div className="p-4 rounded-lg bg-muted/40 border border-border">
+                    <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-2">
                       Recommendation
                     </p>
                     <div className="flex items-center gap-2.5 mb-2">
@@ -191,7 +191,7 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
                       <span className={`text-sm font-semibold ${recColor}`}>{recLabel}</span>
                     </div>
                     {result.recommendationReason && (
-                      <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
                         {result.recommendationReason}
                       </p>
                     )}
@@ -201,14 +201,14 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
                 {/* Strengths & Gaps side by side */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {result.strengths.length > 0 && (
-                    <div className="rounded-xl bg-gradient-to-br from-emerald-500/[0.07] to-emerald-500/[0.02] border border-emerald-200/60 dark:border-emerald-900/30 p-4">
+                    <div className="rounded-lg border border-border p-4">
                       <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-3">
                         <CheckCircle2 className="h-4 w-4" />
                         Strengths
                       </p>
                       <ul className="space-y-2">
                         {result.strengths.map((s, i) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-zinc-600 dark:text-zinc-300">
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                             <span className="mt-1.5 block h-2 w-2 shrink-0 rounded-full bg-emerald-500/60" />
                             {s}
                           </li>
@@ -217,14 +217,14 @@ export function AnalyzeMatch({ jobId }: { jobId: number }) {
                     </div>
                   )}
                   {result.gaps.length > 0 && (
-                    <div className="rounded-xl bg-gradient-to-br from-amber-500/[0.07] to-amber-500/[0.02] border border-amber-200/60 dark:border-amber-900/30 p-4">
+                    <div className="rounded-lg border border-border p-4">
                       <p className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300 mb-3">
                         <AlertCircle className="h-4 w-4" />
                         Areas to improve
                       </p>
                       <ul className="space-y-2">
                         {result.gaps.map((g, i) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-zinc-600 dark:text-zinc-300">
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                             <span className="mt-1.5 block h-2 w-2 shrink-0 rounded-full bg-amber-500/60" />
                             {g}
                           </li>

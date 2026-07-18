@@ -29,7 +29,7 @@ export function BrowseJobs() {
 
   if (isError) {
     return (
-      <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-center">
+      <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-center">
         <p className="text-sm font-medium text-destructive">Failed to load jobs</p>
         <p className="mt-1 text-xs text-muted-foreground">
           {error instanceof Error ? error.message : "Something went wrong"}
@@ -43,7 +43,7 @@ export function BrowseJobs() {
 
   if (!data || data.jobs.length === 0) {
     return (
-      <div className="rounded-xl border border-border/60 bg-card/50 p-12 text-center">
+      <div className="rounded-lg border border-border bg-card p-12 text-center">
         <Briefcase className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
         <p className="text-sm text-muted-foreground">No jobs found matching your criteria.</p>
         <p className="mt-1 text-xs text-muted-foreground/60">Try adjusting your search or filters.</p>

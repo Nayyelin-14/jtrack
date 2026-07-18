@@ -1,26 +1,20 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter, Fraunces, Space_Grotesk } from "next/font/google";
+import { Work_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const inter = Inter({
+const workSans = Work_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-work-sans",
   weight: ["400", "500", "600", "700"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["500", "600", "700"],
 });
 
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
-  weight: ["500", "600"],
-  style: ["italic"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -64,7 +58,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${fraunces.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${workSans.variable} ${fraunces.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>

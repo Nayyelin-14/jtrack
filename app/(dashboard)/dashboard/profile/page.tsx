@@ -3,8 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
-import { Loader2, UserIcon, Mail, Upload, FileText, X, Plus, ArrowLeft, Crown, Camera, Save } from "lucide-react";
+import { Loader2, Mail, FileText, X, Plus, ArrowLeft, Crown, Camera, Save } from "lucide-react";
 import Link from "next/link";
 import { userApi } from "@/lib/users";
 import { useAuthStore } from "@/store/auth-store";
@@ -15,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProfilePage() {
   const user = useAuthStore((s) => s.user);
@@ -99,26 +99,26 @@ export default function ProfilePage() {
   const initials = (profile?.name ?? "U").split(" ").map((p: string) => p[0]).slice(0, 2).join("").toUpperCase();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Profile</h1>
         <p className="text-sm text-muted-foreground">Manage your account information.</p>
       </div>
 
-      <Card className="glass">
+      <Card>
         <CardContent className="flex flex-col items-center gap-4 p-6 sm:flex-row sm:items-center">
           <div className="relative">
-            <Avatar className="h-20 w-20 border-2 border-border/60">
+            <Avatar className="h-20 w-20 border-2 border-border">
               <AvatarImage src={profile?.profile_pic ?? undefined} alt={profile?.name} />
               <AvatarFallback className="bg-primary/15 text-xl font-bold text-primary">{initials}</AvatarFallback>
             </Avatar>
             <button
               onClick={() => profilePicRef.current?.click()}
-              className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground shadow-elegant transition hover:scale-105"
+              className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm transition hover:scale-105"
               aria-label="Change photo"
             >
               {uploadPic.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
@@ -131,7 +131,7 @@ export default function ProfilePage() {
             <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
               <Badge variant="secondary" className="capitalize">{profile?.role ?? user?.role}</Badge>
               {profile?.subscription_tier === "premium" && (
-                <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-400 gap-1">
+                <Badge className="gap-1">
                   <Crown className="h-3 w-3" /> Premium
                 </Badge>
               )}
@@ -165,7 +165,7 @@ export default function ProfilePage() {
 
             <div className="space-y-1.5">
               <Label>Email</Label>
-              <div className="flex items-center gap-2 rounded-lg border border-border/60 px-3 py-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-muted-foreground/60" />
                 {profile?.email ?? user?.email}
               </div>
@@ -174,11 +174,11 @@ export default function ProfilePage() {
             <div className="space-y-1.5">
               <Label>Bio</Label>
               <div className="flex gap-2">
-                <textarea
+                <Textarea
                   value={bio || profile?.bio || ""}
                   onChange={(e) => setBio(e.target.value)}
                   rows={4}
-                  className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring resize-none"
+                  className="flex-1 resize-none"
                   placeholder="Tell us about yourself..."
                 />
                 <Button
@@ -235,7 +235,7 @@ export default function ProfilePage() {
 
             <div className="space-y-2">
               <Label>Resume</Label>
-              <div className="flex items-center gap-3 rounded-lg border border-border/60 p-3">
+              <div className="flex items-center gap-3 rounded-xl border border-border p-3">
                 <FileText className="h-5 w-5 text-muted-foreground/60" />
                 {profile?.resume ? (
                   <>
@@ -250,8 +250,8 @@ export default function ProfilePage() {
 
             <div className="space-y-1.5">
               <Label>Subscription</Label>
-              <div className="flex items-center gap-3 rounded-lg border border-border/60 px-3 py-2.5">
-                <Crown className={`h-5 w-5 ${profile?.subscription_tier === "premium" ? "text-amber-500" : "text-muted-foreground/40"}`} />
+              <div className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5">
+                <Crown className={`h-5 w-5 ${profile?.subscription_tier === "premium" ? "text-foreground" : "text-muted-foreground/40"}`} />
                 <div className="flex-1">
                   <Badge variant={profile?.subscription_tier === "premium" ? "default" : "secondary"}>
                     {profile?.subscription_tier === "premium" ? "Premium" : "Free"}
@@ -267,6 +267,6 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Loader2, Upload, FileText, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -37,13 +36,13 @@ export default function ResumePage() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Resume</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Resume</h1>
         <p className="text-sm text-muted-foreground">Upload a PDF resume to fast-track applications.</p>
       </div>
 
@@ -53,9 +52,9 @@ export default function ResumePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {user?.resume ? (
-            <div className="flex items-center justify-between gap-3 rounded-lg border border-success/30 bg-success/5 p-4">
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-success/30 bg-success/5 p-4">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-lg bg-success/15 text-success">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-success/15 text-success">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -66,7 +65,7 @@ export default function ResumePage() {
 
             </div>
           ) : (
-            <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/60 bg-muted/30 p-4">
+            <div className="flex items-center gap-3 rounded-xl border border-dashed border-border bg-muted/30 p-4">
               <FileText className="h-5 w-5 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">No resume uploaded yet.</p>
             </div>
@@ -78,14 +77,14 @@ export default function ResumePage() {
             onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f); }}
             onClick={() => fileRef.current?.click()}
             className={`grid cursor-pointer place-items-center rounded-xl border-2 border-dashed p-10 text-center transition ${
-              dragOver ? "border-primary bg-primary/5" : "border-border/60 hover:border-primary/50 hover:bg-accent/30"
+              dragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-accent/30"
             }`}
           >
-            <div className="mb-3 grid h-12 w-12 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
+            <div className="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-primary text-primary-foreground">
               {uploadResume.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin text-primary-foreground" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Upload className="h-5 w-5 text-primary-foreground" />
+                <Upload className="h-5 w-5" />
               )}
             </div>
             <p className="text-sm font-semibold">
@@ -102,6 +101,6 @@ export default function ResumePage() {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

@@ -2,14 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Building2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { companyApi } from "@/lib/companies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function CreateCompanyPage() {
   const router = useRouter();
@@ -56,19 +63,14 @@ export default function CreateCompanyPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back
       </button>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <Building2 className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Create Company</h1>
-          <p className="text-xs text-muted-foreground">Register a new company.</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Create Company</h1>
+        <p className="text-xs text-muted-foreground">Register a new company.</p>
       </div>
 
       <Card className="max-w-xl">
@@ -80,12 +82,12 @@ export default function CreateCompanyPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <textarea
+              <Textarea
                 id="description"
                 value={form.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring resize-none"
+                className="resize-none"
                 placeholder="Tell us about your company..."
               />
             </div>
@@ -102,17 +104,14 @@ export default function CreateCompanyPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="size">Company size</Label>
-                <select
-                  id="size"
-                  value={form.size}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
-                >
-                  <option value="">Select size</option>
-                  {["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"].map((s) => (
-                    <option key={s} value={s}>{s} employees</option>
-                  ))}
-                </select>
+                <Select value={form.size} onValueChange={(v) => setForm({ ...form, size: v })}>
+                  <SelectTrigger id="size"><SelectValue placeholder="Select size" /></SelectTrigger>
+                  <SelectContent>
+                    {["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"].map((s) => (
+                      <SelectItem key={s} value={s}>{s} employees</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
@@ -133,6 +132,6 @@ export default function CreateCompanyPage() {
           </form>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

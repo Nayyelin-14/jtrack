@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Plus, Briefcase, Loader2, MapPin, Clock, Users, Eye } from "lucide-react";
 import { jobApi } from "@/lib/jobs";
 import type { MyJobsResponse } from "@/types";
@@ -18,18 +17,13 @@ export default function JobsPage() {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-            <Briefcase className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">My Job Listings</h1>
-            <p className="text-xs text-muted-foreground">Jobs posted by your companies.</p>
-          </div>
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight">My Job Listings</h1>
+          <p className="text-xs text-muted-foreground">Jobs posted by your companies.</p>
         </div>
-        <Button asChild className="gap-2 shadow-md hover:shadow-elegant transition-all">
+        <Button asChild className="gap-2">
           <Link href="/dashboard/jobs/create">
             <Plus className="h-4 w-4" /> New Job
           </Link>
@@ -62,7 +56,7 @@ export default function JobsPage() {
       {data && data.jobs.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="grid place-items-center py-16 text-center">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 mb-4">
+            <div className="grid h-14 w-14 place-items-center rounded-lg bg-primary/10 mb-4">
               <Briefcase className="h-7 w-7 text-primary" />
             </div>
             <h2 className="text-xl font-semibold">No jobs yet</h2>
@@ -76,14 +70,9 @@ export default function JobsPage() {
 
       {data && data.jobs.length > 0 && (
         <div className="space-y-3">
-          {data.jobs.map((job, i) => (
-            <motion.div
-              key={job.job_id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.04 }}
-            >
-              <Card className="transition-all hover:shadow-elegant hover:-translate-y-0.5">
+          {data.jobs.map((job) => (
+            <div key={job.job_id}>
+              <Card className="transition-all hover:shadow-sm hover:-translate-y-0.5">
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
@@ -115,7 +104,7 @@ export default function JobsPage() {
                       </Badge>
                       <Link
                         href={`/dashboard/jobs/${job.job_id}/applications`}
-                        className="inline-flex items-center gap-1 rounded-lg border border-border/60 px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent transition-colors"
+                        className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent transition-colors"
                       >
                         <Users className="h-3.5 w-3.5" /> Applicants
                       </Link>
@@ -129,10 +118,10 @@ export default function JobsPage() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

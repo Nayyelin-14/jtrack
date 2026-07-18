@@ -46,19 +46,14 @@ export default function SkillsPage() {
   const skills = skillsData?.skills ?? [];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6">
+    <div className="space-y-6">
       <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
       </Link>
 
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 place-items-center rounded-xl" style={{ background: "var(--gradient-primary)" }}>
-          <Wrench className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Skills</h1>
-          <p className="text-xs text-muted-foreground">Showcase what you do best.</p>
-        </div>
+      <div>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Skills</h1>
+        <p className="text-xs text-muted-foreground">Showcase what you do best.</p>
       </div>
 
       {isLoading ? (
@@ -134,6 +129,6 @@ export default function SkillsPage() {
           </Card>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

@@ -2,10 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { companyApi } from "@/lib/companies";
 import type { CompanyListResponse } from "@/types";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 export default function PublicCompaniesPage() {
   const { data, isLoading, isError, error } = useQuery({
@@ -17,15 +18,15 @@ export default function PublicCompaniesPage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl px-6 py-10">
-        <h1 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100 mb-1">Companies</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Browse registered companies.</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight mb-1">Companies</h1>
+        <p className="text-sm text-muted-foreground mb-6">Browse registered companies.</p>
 
         {isLoading && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3">
-                <div className="h-4 w-32 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded" />
-                <div className="h-3 w-full bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded" />
+              <div key={i} className="rounded-lg border border-border p-5 space-y-3">
+                <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                <div className="h-3 w-full bg-muted/60 animate-pulse rounded" />
               </div>
             ))}
           </div>
@@ -33,17 +34,17 @@ export default function PublicCompaniesPage() {
 
         {isError && (
           <div className="text-center py-16">
-            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Failed to load companies</p>
-            <p className="text-xs text-zinc-500 mt-1">{error instanceof Error ? error.message : "Something went wrong"}</p>
+            <p className="text-sm font-medium text-foreground">Failed to load companies</p>
+            <p className="text-xs text-muted-foreground mt-1">{error instanceof Error ? error.message : "Something went wrong"}</p>
           </div>
         )}
 
         {data && data.companies.length === 0 && (
           <div className="text-center py-16">
-            <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-3">
-              <Building2 className="h-6 w-6 text-zinc-400" />
+            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <Building2 className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">No companies yet</p>
+            <p className="text-sm font-medium text-foreground">No companies yet</p>
           </div>
         )}
 
@@ -53,26 +54,26 @@ export default function PublicCompaniesPage() {
               <Link
                 key={company.company_id}
                 href={`/companies/${company.company_id}`}
-                className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors group"
+                className="rounded-lg border border-border bg-card p-5 hover:border-primary/40 transition-all group"
               >
                 <div className="flex items-center gap-3 mb-3">
                   {company.logo ? (
-                    <img src={company.logo} alt="" className="h-10 w-10 rounded-lg object-contain bg-white" />
+                    <img src={company.logo} alt="" className="h-10 w-10 rounded-xl object-contain bg-background" />
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10">
-                      <Building2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <Building2 className="h-5 w-5 text-primary" />
                     </div>
                   )}
                   <div className="min-w-0">
-                    <h3 className="font-semibold text-sm text-zinc-800 dark:text-zinc-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    <h3 className="font-semibold text-sm truncate group-hover:text-primary transition-colors">
                       {company.name}
                     </h3>
                     {company.industry && (
-                      <p className="text-xs text-zinc-500">{company.industry}</p>
+                      <p className="text-xs text-muted-foreground">{company.industry}</p>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   {company.location && <span>{company.location}</span>}
                   {company.size && <><span>·</span><span>{company.size}</span></>}
                 </div>
@@ -81,6 +82,7 @@ export default function PublicCompaniesPage() {
           </div>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }
